@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
+    <!-- note: connect to the internet to show the time -->
+    <!-- note: gambar terlampir -->
+    <style>
+      .container {
+        width: 80%;
+        margin-top: 1%;
+      }
+      
+      #date-part {
+        font-size: 1.2em;
+        text-align: right;
+        margin: 2% 5% 0 0;
+      }
+      #time {
+        font-size: 1.2em;
+        text-align: right;
+        margin: 2% 5% 0 0;
+      }
+      
+      body {
+        background-color: rgb(157, 255, 222);
+      }
+    </style>
+  </head>
+
+  <body onload="startTime()">
+    
+    <div class="h4 mb-4" id="date-part"></div>
+    <div id="time"></div>
+    <div class="container">
+      <form class="text-center border border-light p-5">
+        <p class="h4 mb-4">Temperature Convertion</p>
+        <div class="h4 mb-12">
+          <select name="from" id="from" onchange="select()">
+            <option value="cel">Celcius</option>
+            <option value="far">Farenheit</option>
+            <option value="rea">Reamur</option>
+          </select>
+          to
+          <select name="to" id="to" onchange="select()">
+            <option value="cel">Celcius</option>
+            <option value="far">Farenheit</option>
+            <option value="rea">Reamur</option>
+          </select>
+        </div>
+        <input
+          type="number"
+          name="kmh"
+          id="inputnum"
+          class="form-control mb-4"
+          placeholder="some number"
+          onkeypress="validate(event)"
+          onkeyup="conv()"
+        />
+        <p class="h6 mb-4">Convert Result</p>
+        <input
+          type="number"
+          id="result"
+          class="form-control mb-4"
+          placeholder="result"
+          disabled
+        />
+      </form>
+      Change Background Color : <br></br><input class="form-control" id="color" /><button
+        type="button"
+        class="btn btn-light"
+        onclick="change()"
+      >
+        Change
+      </button>
+    </div>
+  </body>
+  <script src="./Convert.js"></script>
+  <script>
+      function startTime() {
+  const today = new Date();
+  let h = today.getHours();
+  let m = today.getMinutes();
+  let s = today.getSeconds();
+  m = checkTime(m);
+  s = checkTime(s);
+  document.getElementById('time').innerHTML =  h + ":" + m + ":" + s;
+  setTimeout(startTime, 1000);
+}
+
+function checkTime(i) {
+  if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+  return i;
+}
+    $(document).ready(function () {
+      var interval = setInterval(function () {
+        var momentNow = moment();
+        $("#date-part").html(
+          momentNow.format("YYYY MMMM DD") +
+            " " +
+            momentNow.format("dddd").substring(0, 3).toUpperCase()
+        );
+      }, 100);
+    });
+    function validate(evt) {
+      var theEvent = evt || window.event;
+
+      // Handle paste
+      if (theEvent.type === "paste") {
+        key = event.clipboardData.getData("text/plain");
+      } else {
+        // Handle key press
+        var key = theEvent.keyCode || theEvent.which;
+        key = String.fromCharCode(key);
+      }
+      var regex = /[0-9]|\./;
+      if (!regex.test(key)) {
+        theEvent.returnValue = false;
+        if (theEvent.preventDefault) theEvent.preventDefault();
+      }
+    }
+    function select() {
+      document.getElementById("inputnum").value = "";
+      document.getElementById("result").value = "";
+    }
+
+    const convert = new Convert();
+    function conv() {
+      if (document.getElementById("from").value == "cel") {
+        const res = convert.fromCelcius(
+          document.getElementById("to").value,
+          parseInt(document.getElementById("inputnum").value)
+        );
+        document.getElementById("result").value = res;
+      }
+      if (document.getElementById("from").value == "rea") {
+        const res = convert.fromReamur(
+          document.getElementById("to").value,
+          parseInt(document.getElementById("inputnum").value)
+        );
+        document.getElementById("result").value = res;
+      }
+      if (document.getElementById("from").value == "far") {
+        const res = convert.fromFarenheit(
+          document.getElementById("to").value,
+          parseInt(document.getElementById("inputnum").value)
+        );
+        document.getElementById("result").value = res;
+      }
+    }
+    function change() {
+      document.body.style.backgroundColor =
+        document.getElementById("color").value;
+    }
+  </script>
+  
+</html>
